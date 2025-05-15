@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Expense Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fa;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #e2e8f0;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 6px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        .results {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .results h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Monthly Expense Calculator</h2>
+
+<table id="expenseTable">
+    <thead>
+    <tr>
+        <th>Category</th>
+        <th>Amount ($)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><input type="text" value="Groceries"></td>
+        <td><input type="number" value="15000"></td>
+    </tr>
+    <tr>
+        <td><input type="text" value="Rent"></td>
+        <td><input type="number" value="40000"></td>
+    </tr>
+    <tr>
+        <td><input type="text" value="Transportation"></td>
+        <td><input type="number" value="5000"></td>
+    </tr>
+    <tr>
+        <td><input type="text" value="Entertainment"></td>
+        <td><input type="number" value="10000"></td>
+    </tr>
+    <tr>
+        <td><input type="text" value="Communication"></td>
+        <td><input type="number" value="2000"></td>
+    </tr>
+    <tr>
+        <td><input type="text" value="Gym"></td>
+        <td><input type="number" value="3000"></td>
+    </tr>
+    </tbody>
+</table>
+
+<button onclick="addRow()">Add New Expense</button>
+<button onclick="calculateExpenses()">Calculate</button>
+
+<div class="results" id="results" style="display:none;">
+    <h3>Results</h3>
+    <p><strong>Total Expenses:</strong> $<span id="total"></span></p>
+    <p><strong>Average Daily Expense:</strong> $<span id="average"></span></p>
+    <p><strong>Top 3 Expenses:</strong></p>
+    <ol id="top3"></ol>
+</div>
+
+<script>
+    function addRow() {
+        const table = document.getElementById("expenseTable").getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+
+        cell1.innerHTML = `<input type="text" placeholder="Category">`;
+        cell2.innerHTML = `<input type="number" placeholder="Amount">`;
+    }
+
+    function calculateExpenses() {
+        const rows = document.querySelectorAll("#expenseTable tbody tr");
+        const expenses = [];
+
+        rows.forEach(row => {
+            const category = row.cells[0].querySelector('input').value.trim();
+            const amountStr = row.cells[1].querySelector('input').value;
+            const amount = parseFloat(amountStr);
+
+            if (category && !isNaN(amount) && amount > 0) {
+                expenses.push({ category, amount });
+            }
+        });
+
+        if (expenses.length === 0) {
+            alert("Please enter valid expenses.");
+            return;
+        }
+
+        const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+        const avgDaily = total / 30;
+
+        const top3 = expenses
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 3);
+
+        document.getElementById("total").textContent = total.toLocaleString();
+        document.getElementById("average").textContent = avgDaily.toFixed(2);
+
+        const topList = document.getElementById("top3");
+        topList.innerHTML = '';
+        top3.forEach(exp => {
+            const li = document.createElement("li");
+            li.textContent = `${exp.category} ($${exp.amount.toLocaleString()})`;
+            topList.appendChild(li);
+        });
+
+        document.getElementById("results").style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
